@@ -2,7 +2,11 @@
 This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master).
 
 ## To-Do :
- - [ ] Graph layer.
+ - [ ] test backprop with radam
+ - [ ] DeepCut
+ - [ ] main.py
+ - [ ] check hgcn issues.
+ - [x] Graph layer.
  - [x] Init Code.
 
 ## Study about :
