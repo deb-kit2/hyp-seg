@@ -2,10 +2,13 @@
 This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master).
 
 ## To-Do :
- - [ ] test backprop with radam
- - [ ] DeepCut
  - [ ] main.py
- - [ ] check hgcn issues.
+ - [ ] OverRide function in main.py
+ - [ ] DeepCut
+ - [ ] Transform graph output back to Euclidean
+ - [x] Check degrees of freedom.
+ - [x] test backprop with radam
+ - [x] check hgcn issues.
  - [x] Graph layer.
  - [x] Init Code.
 
