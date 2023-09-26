@@ -1,5 +1,5 @@
 # Hyperbolic Graph Neural Networks
-This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master).
+This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master) and [JindouHai/H2H-GCN](https://github.com/JindouDai/H2H-GCN/tree/main).
 
 ## To-Do :
  - [ ] main.py
