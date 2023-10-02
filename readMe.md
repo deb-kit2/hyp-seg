@@ -4,8 +4,8 @@ This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResea
 ## To-Do :
  - [ ] main.py
  - [ ] OverRide function in main.py
- - [ ] DeepCut
  - [ ] Transform graph output back to Euclidean
+ - [x] DeepCut
  - [x] Check degrees of freedom.
  - [x] test backprop with radam
  - [x] check hgcn issues.
@@ -14,4 +14,6 @@ This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResea
 
 ## Study about :
  - [ ] Distance matrix normalization.
- - [ ] Similarity as a dot product still valid?
+ - [x] Similarity as a dot product still valid?
+        - Not exactly.
+        - But, can go from distance, to exponential, to get similarity.
