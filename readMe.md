@@ -15,5 +15,5 @@ This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResea
 ## Study about :
  - [ ] Distance matrix normalization.
  - [x] Similarity as a dot product still valid?
-        - Not exactly.
-        - But, can go from distance, to exponential, to get similarity.
+            - Not exactly.
+            - But, can go from distance, to exponential, to get similarity.
