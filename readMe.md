@@ -2,7 +2,8 @@
 This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master) and [JindouHai/H2H-GCN](https://github.com/JindouDai/H2H-GCN/tree/main).
 
 ## To-Do :
- - [ ] main.py
+ - [ ] init model.
+ - [ ] load_data
  - [ ] OverRide function in main.py
  - [ ] Transform graph output back to Euclidean
  - [x] DeepCut
@@ -15,5 +16,5 @@ This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResea
 ## Study about :
  - [ ] Distance matrix normalization.
  - [x] Similarity as a dot product still valid?
-            - Not exactly.
-            - But, can go from distance, to exponential, to get similarity.
+        - Not exactly.
+        - But, can go from distance, to exponential, to get similarity.

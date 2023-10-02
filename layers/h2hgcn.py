@@ -5,11 +5,11 @@ from utils.pre_utils import *
 
 class H2HGCN(nn.Module) :
 
-    def __init__(self, args, logger) :
+    def __init__(self, args, last = False) :
         super(H2HGCN, self).__init__()
         self.debug = False
         self.args = args
-        self.logger = logger
+        self.last = last
         self.set_up_params()
         self.activation = nn.SELU()
 
@@ -249,4 +249,7 @@ class H2HGCN(nn.Module) :
             node_repr = self.apply_activation(node_repr) * mask
             node_repr = self.args.manifold.normalize(node_repr)
         
+        if self.last :
+            node_repr = self.args.manifold.log_map_zero(node_repr)
+            
         return node_repr
