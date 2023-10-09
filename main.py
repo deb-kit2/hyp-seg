@@ -4,8 +4,6 @@ import argparse
 import logging
 
 import torch
-from torch.optim import Adam
-from optimizers.rsgd import RiemannianSGD
 
 from utils.extractor import ViTExtractor
 from utils.features_extract import deep_features
@@ -36,8 +34,12 @@ def parse_args() :
     parser.add_argument("--dim", type = int, default = 16)
     parser.add_argument("--num_layers", type = int, default = 1)
     parser.add_argument("--tie_weight", action = "store_true", default = False)
-    parser.add_argument("--euclidean_lr", type = float)
-    parser.add_argument("--stiefel_lr", type = float)
+    parser.add_argument("--lr_euc", type = float, default = 0.01)
+    parser.add_argument("--lr_stie", type = float, default = 0.1)
+    parser.add_argument("--lr_scheduler", type = float, defaul = "step")
+    parser.add_argument("--step_lr_reduce_freq", type = int, default = 500)
+    parser.add_argument("--step_lr_gamma", type = float, default = 0.3)
+    parser.add_argument("--lr_gamma", type =  float, default = 0.98)
     
     # segmentation parameters
     parser.add_argument("--mode", type = int, default = 0, choices = [0, 1, 2],
@@ -89,7 +91,7 @@ def load_model_opt_sched(args, dim, K) :
         torch.save(model.state_dict(), "model.pt")
     
     euc_opt, euc_sched, stie_opt, stie_sched = set_up_optimizer_scheduler(
-        False, args, model, args.lr, args.lr_stie)
+        False, args, model, args.lr_euc, args.lr_stie)
 
     return model, euc_opt, euc_sched, stie_opt, stie_sched
 
@@ -148,7 +150,7 @@ def main() :
         W = create_adj(F, args.cut, args.alpha)
         # F, W are numpy arrays
 
-        # mode 0 # do this ##########################################################################
+        # mode 0
         model, euc_opt, euc_sched, stie_opt, stie_sched = load_model_opt_sched(args, 32, args.K)
         S = train(args, model, euc_opt, euc_sched, stie_opt, stie_sched, 
                   epochs[0], F, W)

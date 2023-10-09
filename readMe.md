@@ -2,8 +2,10 @@
 This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master), [JindouHai/H2H-GCN](https://github.com/JindouDai/H2H-GCN/tree/main) and [SAMPL-Weizmann/DeepCut](https://github.com/SAMPL-Weizmann/DeepCut).
 
 ## To-Do :
- - [ ] print logs
- - [ ] OverRide function in main.py
+ - [ ] Fix arguments.
+ - [ ] `args.step` overlapping.
+ - [ ] Print logs.
+ - [ ] OverRide function in `main.py`.
  - [ ] maybe remove log_map_zero from model output.
  - [ ] play with args.num_layers
  - [x] load_data
