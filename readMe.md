@@ -3,6 +3,7 @@ This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResea
 
 ## To-Do :
  - [ ] fix cuda error.
+ - [ ] remove epochs from args.
  - [ ] maybe remove log_map_zero from model output.
  - [ ] Print logs.
  - [ ] OverRide function in `main.py`.

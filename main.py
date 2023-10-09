@@ -250,8 +250,9 @@ if __name__ == "__main__" :
 
     assert not(args.K != 2 and args.cc), 'largest connected component only available for k == 2'
     args.cut = 0 if args.cut == "ncut" else 1
-    if args.cut == 1 :
-        args.K = 10
+    # Un-used in original implementation
+    # if args.cut == 1 :
+    #     args.K = 10
 
     args.manifold = LorentzManifold(args)
     args.select_manifold = "lorentz"
