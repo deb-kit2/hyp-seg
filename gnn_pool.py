@@ -17,6 +17,7 @@ class GNNpool(nn.Module) :
         """
 
         super(GNNpool, self).__init__()
+        self.args = args
         self.device = args.device
         self.num_clusters = num_clusters
         self.mlp_hidden = mlp_hidden
