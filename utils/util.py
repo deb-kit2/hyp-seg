@@ -9,13 +9,15 @@ import warnings
 import torch
 import math
 import cv2
+import os
 
 cmap = 'tab20'
 def save_or_show(arr, filename, dir, save=False):
     if save:
-        plt.imsave(dir + filename + '_org' + '.png', arr[0], cmap=cmap)
-        plt.imsave(dir + filename + '_mask' + '.png', arr[1], cmap=cmap)
-        plt.imsave(dir + filename + '_fused' + '.png', arr[2], cmap=cmap)
+        filename = ".".join(filename.split(".")[:-1])
+        plt.imsave(os.path.join(dir, filename) + '_org' + '.png', arr[0], cmap=cmap)
+        plt.imsave(os.path.join(dir, filename) + '_mask' + '.png', arr[1], cmap=cmap)
+        plt.imsave(os.path.join(dir, filename) + '_fused' + '.png', arr[2], cmap=cmap)
     else:
         im_show_n(arr, 3, 'org, mask, fused')
 

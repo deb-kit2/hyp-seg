@@ -146,7 +146,7 @@ def main() :
         if os.path.exists(os.path.join(args.output_dir, file)) :
             continue
 
-        image_tensor, image = load_data_img(os.path.join(args.input_dir, file), args.res)
+        image_tensor, image = load_data_img(os.path.join(args.input_dir, file), (args.res, args.res))
         
         # Extract deep features, from the transformer and create an adj matrix
         F = deep_features(image_tensor, extractor, 
