@@ -1,5 +1,5 @@
 from functools import partial
-from util import trunc_normal_
+from utils.util import trunc_normal_
 import torch.nn as nn
 import torch
 import math

@@ -35,7 +35,7 @@ def parse_args() :
     # graph parameters
     parser.add_argument("--dim", type = int, default = 16)
     parser.add_argument("--num_layers", type = int, default = 1)
-    parser.add_argument("--tie_weight", action = "store_true")
+    parser.add_argument("--tie_weight", action = "store_true", default = False)
     parser.add_argument("--euclidean_lr", type = float)
     parser.add_argument("--stiefel_lr", type = float)
     
@@ -125,8 +125,8 @@ def main() :
     
     args.feature_dim = 6528 if args.log_bin else 384
     if args.mode in [1, 2] :
-        foreground_k = K
-        K = 2
+        foreground_k = args.K
+        args.K = 2
     
     epochs = [10, 100, 10]
     
@@ -149,7 +149,7 @@ def main() :
         # F, W are numpy arrays
 
         # mode 0 # do this ##########################################################################
-        model, euc_opt, euc_sched, stie_opt, stie_sched = load_model_opt_sched(args, 32, K)
+        model, euc_opt, euc_sched, stie_opt, stie_sched = load_model_opt_sched(args, 32, args.K)
         S = train(args, model, euc_opt, euc_sched, stie_opt, stie_sched, 
                   epochs[0], F, W)
 
@@ -245,7 +245,7 @@ if __name__ == "__main__" :
     assert not(args.K != 2 and args.cc), 'largest connected component only available for k == 2'
     args.cut = 0 if args.cut == "ncut" else 1
     if args.cut == 1 :
-        K = 10
+        args.K = 10
 
     args.manifold = LorentzManifold(args)
     args.select_manifold = "lorentz"

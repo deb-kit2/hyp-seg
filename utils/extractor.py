@@ -1,7 +1,7 @@
 import torch.nn.modules.utils as nn_utils
 from typing import Union, List, Tuple
 from torchvision import transforms
-import vision_transformer as vits
+import utils.vision_transformer as vits
 from pathlib import Path
 from PIL import Image
 from torch import nn
