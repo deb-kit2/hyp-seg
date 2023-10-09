@@ -1,5 +1,4 @@
 from torch.optim.optimizer import Optimizer, required
-from utils import *
 
 class RiemannianSGD(Optimizer):
     """Riemannian stochastic gradient descent.

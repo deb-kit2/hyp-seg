@@ -250,6 +250,7 @@ class H2HGCN(nn.Module) :
             node_repr = self.args.manifold.normalize(node_repr)
         
         if self.last :
-            node_repr = self.args.manifold.log_map_zero(node_repr)
+            pass
+            # node_repr = self.args.manifold.log_map_zero(node_repr)
             
         return node_repr
