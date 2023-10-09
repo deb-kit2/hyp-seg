@@ -30,16 +30,19 @@ def parse_args() :
     parser.add_argument("--epochs", type = int)
     parser.add_argument("--patience", type = int)
 
+    parser.add_argument("--optimizer", type = str, default = "Adam")
+    parser.add_argument("--stiefel_optimizer", type = str, default = "rsgd")
+    parser.add_argument("--lr_euc", type = float, default = 0.01)
+    parser.add_argument("--lr_stie", type = float, default = 0.1)
+    parser.add_argument("--lr_scheduler", type = str, default = "step")
+    parser.add_argument("--step_lr_reduce_freq", type = int, default = 500)
+    parser.add_argument("--step_lr_gamma", type = float, default = 0.3)
+    parser.add_argument("--lr_gamma", type =  float, default = 0.98)
+
     # graph parameters
     parser.add_argument("--dim", type = int, default = 16)
     parser.add_argument("--num_layers", type = int, default = 1)
     parser.add_argument("--tie_weight", action = "store_true", default = False)
-    parser.add_argument("--lr_euc", type = float, default = 0.01)
-    parser.add_argument("--lr_stie", type = float, default = 0.1)
-    parser.add_argument("--lr_scheduler", type = float, defaul = "step")
-    parser.add_argument("--step_lr_reduce_freq", type = int, default = 500)
-    parser.add_argument("--step_lr_gamma", type = float, default = 0.3)
-    parser.add_argument("--lr_gamma", type =  float, default = 0.98)
     
     # segmentation parameters
     parser.add_argument("--mode", type = int, default = 0, choices = [0, 1, 2],
