@@ -1,11 +1,15 @@
 # Hyperbolic Graph Neural Networks
-This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master) and [JindouHai/H2H-GCN](https://github.com/JindouDai/H2H-GCN/tree/main).
+This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master), [JindouHai/H2H-GCN](https://github.com/JindouDai/H2H-GCN/tree/main) and [SAMPL-Weizmann/DeepCut](https://github.com/SAMPL-Weizmann/DeepCut).
 
 ## To-Do :
- - [ ] init model.
- - [ ] load_data
+ - [ ] print logs
  - [ ] OverRide function in main.py
- - [ ] Transform graph output back to Euclidean
+ - [ ] maybe remove log_map_zero from model output.
+ - [ ] play with args.num_layers
+ - [x] load_data
+ - [x] init model, forward_pass and loss
+ - [x] check norm of F
+ - [x] check feature_dim
  - [x] DeepCut
  - [x] Check degrees of freedom.
  - [x] test backprop with radam
@@ -14,7 +18,7 @@ This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResea
  - [x] Init Code.
 
 ## Study about :
- - [ ] Distance matrix normalization.
+ - [x] Distance matrix normalization.
  - [x] Similarity as a dot product still valid?
         - Not exactly.
         - But, can go from distance, to exponential, to get similarity.

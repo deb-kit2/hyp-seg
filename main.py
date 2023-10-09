@@ -3,6 +3,10 @@ import json
 import argparse
 import logging
 
+import torch
+from torch.optim import Adam
+from optimizers.rsgd import RiemannianSGD
+
 from utils.extractor import ViTExtractor
 from utils.features_extract import deep_features
 from utils.bilateral_solver import bilateral_solver_output
@@ -11,8 +15,8 @@ from manifolds.stiefel import StiefelManifold
 from manifolds.lorentz import LorentzManifold
 
 from tqdm import tqdm
-from utils.pre_utils import set_seed
-from utils.util import download_url, load_data_img, create_adj
+from utils.pre_utils import set_seed, set_up_optimizer_scheduler
+from utils.util import *
 
 
 def parse_args() :
@@ -29,7 +33,6 @@ def parse_args() :
     parser.add_argument("--patience", type = int)
 
     # graph parameters
-    parser.add_argument("--feature_dim", type = int, default = 256)
     parser.add_argument("--dim", type = int, default = 16)
     parser.add_argument("--num_layers", type = int, default = 1)
     parser.add_argument("--tie_weight", action = "store_true")
@@ -68,20 +71,66 @@ def parse_args() :
     return args
 
 
-def train() :
-    extractor = ViTExtractor('dino_vits8', args.stride, model_dir = args.pretrained_weights, device = args.device)
-    
-    feats_dim = 6528 if args.log_bin else 384
-    if args.mode in [1, 2] :
-        foreground_k = K
-        K = 2
-    
+def load_model_opt_sched(args, dim, K) :
     # model init
     if args.cut == 0 : 
         from gnn_pool import GNNpool
     else : 
         from gnn_pool_cc import GNNpool
 
+    args.stie_vars = []
+    args.eucl_vars = []
+
+    model = GNNpool(args, dim, K).to(args.device)
+    model.train()
+    if os.path.exists("model.pt") :
+        model.load_state_dict(torch.load("model.pt", map_location = args.device))
+    else :
+        torch.save(model.state_dict(), "model.pt")
+    
+    euc_opt, euc_sched, stie_opt, stie_sched = set_up_optimizer_scheduler(
+        False, args, model, args.lr, args.lr_stie)
+
+    return model, euc_opt, euc_sched, stie_opt, stie_sched
+
+
+def train(args, model, euc_opt, euc_sched, stie_opt, stie_sched, epochs,
+          node_feats, edge_weights) :
+    
+    adj = torch.arange(0, node_feats.shape[0]).repeat(node_feats.shape[0], 1)
+    adj.to(args.device)
+
+    F = torch.from_numpy(node_feats).to(args.device)
+    W = torch.from_numpy(edge_weights).to(args.device)
+
+    for i in range(epochs) :
+        euc_opt.zero_grad()
+        stie_opt.zero_grad()
+
+        A, S = model(F, adj, W)
+        loss = model.loss(A, S)
+
+        loss.backward()
+        euc_opt.step()
+        stie_opt.step()
+
+        euc_sched.step()
+        stie_sched.step()
+
+    return S
+
+
+def main() :
+    extractor = ViTExtractor('dino_vits8', args.stride, model_dir = args.pretrained_weights, device = args.device)
+    
+    args.feature_dim = 6528 if args.log_bin else 384
+    if args.mode in [1, 2] :
+        foreground_k = K
+        K = 2
+    
+    epochs = [10, 100, 10]
+    
+    # action
     for file in tqdm(os.listdir(args.input_dir)) :
         if not file.endswith((".jpg", ".png", ".jpeg")) :
             continue
@@ -97,8 +146,69 @@ def train() :
         F = deep_features(image_tensor, extractor, 
                           args.layer, args.facet, bin = args.log_bin, device = args.device)
         W = create_adj(F, args.cut, args.alpha)
+        # F, W are numpy arrays
 
+        # mode 0 # do this ##########################################################################
+        model, euc_opt, euc_sched, stie_opt, stie_sched = load_model_opt_sched(args, 32, K)
+        S = train(args, model, euc_opt, euc_sched, stie_opt, stie_sched, 
+                  epochs[0], F, W)
 
+        # polled matrix (after softmax, before argmax)
+        S = S.detach().cpu()
+        S = torch.argmax(S, dim = -1)
+
+        # Post-processing Connected Component/bilateral solver
+        mask0, S = graph_to_mask(S, args.cc, args.stride, image_tensor, image)
+        # apply bilateral solver
+        if args.bs :
+            mask0 = bilateral_solver_output(image, mask0)[1]
+
+        if args.mode == 0 :
+            save_or_show([image, mask0, apply_seg_map(image, mask0, 0.7)], file, args.output_dir, args.save)
+            continue
+
+        # mode 1
+        sec_index = np.nonzero(S).squeeze(1)
+        F_2 = F[sec_index]
+        W_2 = create_adj(F_2, args.cut, args.alpha)
+
+        model2, euc_opt2, euc_sched2, stie_opt2, stie_sched2 = load_model_opt_sched(args, 32, foreground_k)
+        S_2 = train(args, model2, euc_opt2, euc_sched2, stie_opt2, stie_sched2,
+                    epochs[1], F_2, W_2)
+
+        S_2 = S_2.detach().cpu()
+        S_2 = torch.argmax(S_2, dim=-1)
+        S[sec_index] = S_2 + 3
+
+        mask1, S = graph_to_mask(S, args.cc, args.stride, image_tensor, image)
+
+        if args.mode == 1 :
+            save_or_show([image, mask1, apply_seg_map(image, mask1, 0.7)], file, args.output_dir, args.save)
+            continue
+
+        # mode 2
+        sec_index = np.nonzero(S == 0).squeeze(1)
+        F_3 = F[sec_index]
+        W_3 = create_adj(F_3, args.cut, args.alpha)
+
+        model3, euc_opt3, euc_sched3, stie_opt3, stie_sched3 = load_model_opt_sched(args, 32, 2)
+        S_3 = train(args, model3, euc_opt3, euc_sched3, stie_opt3, stie_sched3,
+                    epochs[2], F_3, W_3)
+
+        S_3 = S_3.detach().cpu()
+        S_3 = torch.argmax(S_3, dim = -1)
+        S[sec_index] = S_3 + foreground_k + 5
+
+        mask2, S = graph_to_mask(S, args.cc, args.stride, image_tensor, image)
+        if args.bs :
+            mask_foreground = mask0
+            mask_background = np.where(mask2 != foreground_k + 5, 0, 1)
+            bs_foreground = bilateral_solver_output(image, mask_foreground)[1]
+            bs_background = bilateral_solver_output(image, mask_background)[1]
+            mask2 = bs_foreground + (bs_background * 2)
+
+        save_or_show([image, mask2, apply_seg_map(image, mask2, 0.7)], file, args.output_dir, args.save)
+    
     return
 
 
@@ -143,11 +253,12 @@ if __name__ == "__main__" :
     args.weight_manifold = StiefelManifold(args, 1)
     args.proj_init = "orthogonal"
 
-    args.stie_vars = []
-    args.eucl_vars = []
-
     args.device = "cuda:" + str(args.cuda) if int(args.cuda) >= 0 else "cpu"
     args.patience = args.epochs if not args.patience else int(args.patience)
     set_seed(args.seed)
 
-    train()
+    main()
+
+    # clean-up
+    if os.path.exists("model.pt") :
+        os.remove("model.pt")
