@@ -38,6 +38,7 @@ def parse_args() :
     parser.add_argument("--step_lr_reduce_freq", type = int, default = 500)
     parser.add_argument("--step_lr_gamma", type = float, default = 0.3)
     parser.add_argument("--lr_gamma", type =  float, default = 0.98)
+    parser.add_argument("--weight_decay", type =  float, default = 0.)
 
     # graph parameters
     parser.add_argument("--dim", type = int, default = 16)
