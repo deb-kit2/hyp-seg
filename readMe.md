@@ -2,12 +2,13 @@
 This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master), [JindouHai/H2H-GCN](https://github.com/JindouDai/H2H-GCN/tree/main) and [SAMPL-Weizmann/DeepCut](https://github.com/SAMPL-Weizmann/DeepCut).
 
 ## To-Do :
- - [ ] Fix arguments.
- - [ ] `args.step` overlapping.
+ - [ ] fix cuda error.
+ - [ ] maybe remove log_map_zero from model output.
  - [ ] Print logs.
  - [ ] OverRide function in `main.py`.
- - [ ] maybe remove log_map_zero from model output.
  - [ ] play with args.num_layers
+ - [x] `args.step` overlapping.
+ - [x] Fix arguments.
  - [x] load_data
  - [x] init model, forward_pass and loss
  - [x] check norm of F

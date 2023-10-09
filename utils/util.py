@@ -194,8 +194,8 @@ def apply_seg_map(img, seg, alpha):
     @param alpha: The opacity of the segmentation overlay, 0==transparent, 1==only segmentation map
     @return: segmented image as a numpy array
     """
-    plt.imsave('./tmp/tmp.png', seg, cmap=cmap)
-    seg = (plt.imread('./tmp/tmp.png')[:,:,:3] * 255).astype(np.uint8)
+    plt.imsave('./tmp.png', seg, cmap=cmap)
+    seg = (plt.imread('./tmp.png')[:,:,:3] * 255).astype(np.uint8)
     return ((seg * alpha) + (img * (1 - alpha))).astype(np.uint8)
 
 def _no_grad_trunc_normal_(tensor, mean, std, a, b):
