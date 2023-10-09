@@ -26,4 +26,6 @@ def deep_features(image_tensor, extractor, layer, facet, bin: bool = False, incl
     deep_features = deep_features.reshape((deep_features.shape[0] * deep_features.shape[1], deep_features.shape[2]))
 
     # deep_features size X batch * (height* width/(patchsize ^2))
+    # norm = np.linalg.norm(deep_features, axis = -1, keepdims = True)
+    # deep_features = deep_features / norm
     return deep_features

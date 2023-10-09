@@ -43,10 +43,10 @@ def graph_to_mask(S, cc, stride, image_tensor, image):
 
     return mask, S
 
-def create_adj(F, cut, alpha=1):
+def create_adj(F, cut, alpha = 1):
     W = F @ F.T
     # if NCut
-    if cut == 0: 
+    if cut == 0 : 
         # threshold
         W = W * (W > 0)
         # norm
@@ -54,6 +54,9 @@ def create_adj(F, cut, alpha=1):
     # if CC
     else:
         W = W - (W.max() / alpha)
+
+    # explicit normalization added by Deb.
+    W = W / np.shape(F)[0]
     
     return W
 
