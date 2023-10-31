@@ -210,7 +210,7 @@ class H2HGCN(nn.Module) :
         real_node_num = (mask > 0).sum()
         
         # select out the neighbors of each node
-        neighbors = torch.index_select(msg.cuda().to(self.args.device), 0, adj_mat.view(-1).cuda().to(self.args.device)) 
+        neighbors = torch.index_select(msg, 0, adj_mat.view(-1)) 
         combined_msg = self.hyperbolic_mean(neighbors, node_num, max_neighbor, real_node_num, weight)
         
         return combined_msg 
