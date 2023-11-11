@@ -198,6 +198,8 @@ if __name__ == "__main__":
     args = parse_args()
     color_map = {
         0 : "black",
+        1 : "tab:orange",
+        2 : "m",
         3 : "red",
         4 : "b",
         5 : "g",
@@ -213,6 +215,10 @@ if __name__ == "__main__":
 
     x1 = np.array(data["x1"])
     bird = np.array(data["S1"])
+    bird = np.abs(bird)
+
+    if bird[0] == 1 :
+        bird = bird - 1
     bird = bird[bird > 0]
 
     embeddings = torch.tensor(x1, dtype = torch.float32)
