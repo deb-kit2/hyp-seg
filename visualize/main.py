@@ -204,7 +204,7 @@ if __name__ == "__main__":
     }
 
     if not os.path.exists("saved_figures") :
-        os.mkdirs("saved_figures")
+        os.mkdir("saved_figures")
 
     with open(args.file, "r", encoding = "utf-8") as fi :
         data = json.load(fi)
