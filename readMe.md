@@ -2,12 +2,12 @@
 This code has been adapted from [HazyResearch/hgcn](https://github.com/HazyResearch/hgcn/tree/master), [JindouHai/H2H-GCN](https://github.com/JindouDai/H2H-GCN/tree/main) and [SAMPL-Weizmann/DeepCut](https://github.com/SAMPL-Weizmann/DeepCut).
 
 ## To-Do :
- - [ ] fix cuda error.
+ - [x] fix cuda error.
  - [ ] remove epochs from args.
- - [ ] maybe remove log_map_zero from model output.
+ - [x] maybe remove log_map_zero from model output.
  - [ ] Print logs.
  - [ ] OverRide function in `main.py`.
- - [ ] play with args.num_layers
+ - [x] play with args.num_layers
  - [x] `args.step` overlapping.
  - [x] Fix arguments.
  - [x] load_data
