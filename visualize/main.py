@@ -189,6 +189,8 @@ def plot_low_dims(tsne_embeddings, HT_SNE_embeddings, CO_SNE_embedding, colors, 
 
     plt.savefig("./saved_figures/" + "CO-SNE.png", bbox_inches='tight', dpi=fig.dpi)
 
+    return CO_SNE_ebmbeddings
+
 
 
 if __name__ == "__main__":
@@ -227,6 +229,12 @@ if __name__ == "__main__":
 
     tsne_embeddings, HT_SNE_embeddings, CO_SNE_embedding  = run_TSNE(embeddings, learning_rate, learning_rate_for_h_loss, perplexity, early_exaggeration, student_t_gamma)
 
-    plot_low_dims(tsne_embeddings, HT_SNE_embeddings, CO_SNE_embedding, colors, learning_rate, learning_rate_for_h_loss, perplexity, early_exaggeration, student_t_gamma)
+    emb = plot_low_dims(tsne_embeddings, HT_SNE_embeddings, CO_SNE_embedding, colors, learning_rate, learning_rate_for_h_loss, perplexity, early_exaggeration, student_t_gamma)
 
-
+    with open(args.file.split("/")[-1], "w", encoding = "utf-8") as fi:
+        d = {
+            "emb" : emb.tolist(),
+            "colors" : colors
+        }
+        json.dump(d, fi, indent = 4)
+        
