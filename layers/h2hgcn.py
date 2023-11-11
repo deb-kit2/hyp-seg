@@ -147,7 +147,7 @@ class H2HGCN(nn.Module) :
         x_norm_square = x.pow(2).sum(-1, keepdim = True)
         x_norm_square = torch.clamp(x_norm_square, max = 0.9)
         
-        tmp = torch.ones((x.size(0), 1)).cuda().to(self.args.device)
+        tmp = torch.ones((x.size(0), 1)).to(self.args.device)
         tmp1 = torch.cat((tmp, x), dim = 1)
         tmp2 = 1.0 / torch.sqrt(1.0 - x_norm_square)
         tmp3 = (tmp1 * tmp2)
@@ -171,7 +171,7 @@ class H2HGCN(nn.Module) :
         k_mean = (torch.sum(lamb * x, dim = 1, keepdim = True) / (torch.sum(lamb, dim = 1, keepdim = True))).squeeze()
         h_mean = self.k2h(k_mean)
 
-        virtual_mean = torch.cat((torch.tensor([[1.0]]), torch.zeros(1, y.size(-1) - 1)), 1).cuda().to(self.args.device)
+        virtual_mean = torch.cat((torch.tensor([[1.0]]), torch.zeros(1, y.size(-1) - 1)), 1).to(self.args.device)
         tmp = virtual_mean.repeat(node_num - real_node_num, 1)
 
         mean = torch.cat((h_mean, tmp), 0)
@@ -191,8 +191,8 @@ class H2HGCN(nn.Module) :
             weight : a list of weights
             step : a certain layer
         """
-        layer_weight = torch.cat((torch.zeros((self.args.dim - 1, 1)).cuda().to(self.args.device), weight[step]), dim = 1)
-        tmp = torch.zeros((1, self.args.dim)).cuda().to(self.args.device)
+        layer_weight = torch.cat((torch.zeros((self.args.dim - 1, 1)).to(self.args.device), weight[step]), dim = 1)
+        tmp = torch.zeros((1, self.args.dim)).to(self.args.device)
         tmp[0, 0] = 1
         layer_weight = torch.cat((tmp, layer_weight), dim = 0)
         
@@ -210,7 +210,7 @@ class H2HGCN(nn.Module) :
         real_node_num = (mask > 0).sum()
         
         # select out the neighbors of each node
-        neighbors = torch.index_select(msg, 0, adj_mat.view(-1)) 
+        neighbors = torch.index_select(msg.to(self.args.device), 0, adj_mat.view(-1).to(self.args.device) 
         combined_msg = self.hyperbolic_mean(neighbors, node_num, max_neighbor, real_node_num, weight)
         
         return combined_msg 
@@ -238,7 +238,7 @@ class H2HGCN(nn.Module) :
         node_repr = self.activation(self.linear(node_repr))
         adj_list, weight = self.split_input(adj_list, weight)
         
-        mask = torch.ones((node_repr.size(0), 1)).cuda().to(self.args.device)
+        mask = torch.ones((node_repr.size(0), 1)).to(self.args.device)
         node_repr = self.args.manifold.exp_map_zero(node_repr)
 
         for step in range(self.args.num_layers) :
