@@ -73,6 +73,9 @@ def parse_args() :
     parser.add_argument("--output_dir", type = str, required = True)
     parser.add_argument("--save", action = "store_true", default = False)
 
+    # save embeddings for plot
+    parser.add_argument("--save_embeds", action = "store_true", default = False)
+
     args = parser.parse_args()
     return args
 
@@ -113,7 +116,7 @@ def train(args, model, euc_opt, euc_sched, stie_opt, stie_sched, epochs,
         euc_opt.zero_grad()
         stie_opt.zero_grad()
 
-        A, S = model(F, adj, W)
+        A, S, x = model(F, adj, W)
         loss = model.loss(A, S)
 
         loss.backward()
@@ -123,7 +126,7 @@ def train(args, model, euc_opt, euc_sched, stie_opt, stie_sched, epochs,
         euc_sched.step()
         stie_sched.step()
 
-    return S
+    return S, x
 
 
 def main() :
@@ -156,9 +159,13 @@ def main() :
 
         # mode 0
         model, euc_opt, euc_sched, stie_opt, stie_sched = load_model_opt_sched(args, 32, args.K)
-        S = train(args, model, euc_opt, euc_sched, stie_opt, stie_sched, 
-                  epochs[0], F, W)
+        S, x = train(args, model, euc_opt, euc_sched, stie_opt, stie_sched, 
+                     epochs[0], F, W)
 
+        # save x
+        if args.save_embeds :
+            d = {"x0" : args.manifold.from_lorentz_to_poincare(x).tolist()}
+        
         # polled matrix (after softmax, before argmax)
         S = S.detach().cpu()
         S = torch.argmax(S, dim = -1)
@@ -172,24 +179,42 @@ def main() :
         if args.mode == 0 :
             save_or_show([image, mask0, apply_seg_map(image, mask0, 0.7)], file, args.output_dir, args.save)
             continue
-
+            
+        if os.path.exists("model.pt") :
+            os.remove("model.pt")
+        
         # mode 1
         sec_index = np.nonzero(S).squeeze(1)
         F_2 = F[sec_index]
         W_2 = create_adj(F_2, args.cut, args.alpha)
 
         model2, euc_opt2, euc_sched2, stie_opt2, stie_sched2 = load_model_opt_sched(args, 32, foreground_k)
-        S_2 = train(args, model2, euc_opt2, euc_sched2, stie_opt2, stie_sched2,
+        S_2, x = train(args, model2, euc_opt2, euc_sched2, stie_opt2, stie_sched2,
                     epochs[1], F_2, W_2)
 
+        # save x
+        if args.save_embeds :
+            d["x1"] = args.manifold.from_lorentz_to_poincare(x).tolist()
+        
         S_2 = S_2.detach().cpu()
         S_2 = torch.argmax(S_2, dim=-1)
         S[sec_index] = S_2 + 3
 
         mask1, S = graph_to_mask(S, args.cc, args.stride, image_tensor, image)
 
+        # save cluster assignment
+        if args.save_embeds :
+            d["S1"] = S.tolist()
+            with open(os.path.join(args.output_dir, file.split(".")[0] + ".json"),
+                      "w", encoding = "utf-8") as fi:
+                json.dump(d, fi, indent = 4)
+            
         if args.mode == 1 :
             save_or_show([image, mask1, apply_seg_map(image, mask1, 0.7)], file, args.output_dir, args.save)
+
+            if os.path.exists("model.pt") :
+                os.remove("model.pt")
+                
             continue
 
         # mode 2
