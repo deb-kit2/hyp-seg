@@ -10,6 +10,9 @@ import torch
 import math
 import cv2
 import os
+import logging
+pil_logger = logging.getLogger('PIL')
+pil_logger.setLevel(logging.INFO)
 
 cmap = 'tab20'
 def save_or_show(arr, filename, dir, save=False):
