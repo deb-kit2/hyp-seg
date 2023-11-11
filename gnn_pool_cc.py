@@ -47,7 +47,7 @@ class GNNpool(nn.Module) :
         # cluster assignment for matrix S
         S = F.softmax(H, dim = -1)
 
-        return edge_weights, S
+        return edge_weights, S, x
 
     def loss(self, A, S) :
         """
