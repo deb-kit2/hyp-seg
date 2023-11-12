@@ -219,6 +219,7 @@ if __name__ == "__main__":
         bird = bird - 1
     bird = bird[bird > 0]
 
+    x1 = x1 / (np.linalg.norm(x1, axis = -1).max() + 0.005)
     embeddings = torch.tensor(x1, dtype = torch.float32)
     colors = [color_map[int(b)] for b in bird]
 
