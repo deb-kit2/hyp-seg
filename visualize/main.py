@@ -181,15 +181,13 @@ def plot_low_dims(tsne_embeddings, HT_SNE_embeddings, CO_SNE_embedding, colors, 
     circle1 = plt.Circle((0, 0), 1, color='black', fill=False)
     plt.gca().add_patch(circle1)
 
-    d = 1
-
-    plt.scatter(CO_SNE_embedding[:,0] / d, CO_SNE_embedding[:,1] / d, c=colors, s=30)
+    plt.scatter(CO_SNE_embedding[:,0], CO_SNE_embedding[:,1], c=colors, s=30)
     ax.set_aspect('equal')
     plt.axis('off')
 
     plt.savefig("./saved_figures/" + "CO-SNE.png", bbox_inches='tight', dpi=fig.dpi)
 
-    return CO_SNE_ebmbeddings
+    return CO_SNE_embedding
 
 
 
